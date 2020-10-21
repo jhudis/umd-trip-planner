@@ -13,7 +13,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -29,50 +29,64 @@ import javax.xml.parsers.ParserConfigurationException;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    final AtomicReference<Document> docRef = new AtomicReference<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        getPath();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
+    }
+
+    private void getPath() {
+        Thread thread = new Thread(() -> {
+            synchronized (docRef) {
+                try {
+                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder db = dbf.newDocumentBuilder();
+                    docRef.set(db.parse(new URL("http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=umd&r=122").openStream()));
+                } catch (IOException | SAXException | ParserConfigurationException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
     }
 
     @Override
     public void onMapReady(final GoogleMap map) {
-        AtomicReference<Document> docRef = new AtomicReference<>();
-        Thread thread = new Thread(() -> {
-            try {
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                docRef.set(db.parse(new URL("http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=umd&r=104").openStream()));
-            } catch (IOException | SAXException | ParserConfigurationException e) {
-                e.printStackTrace();
-            }
-        });
-        thread.start();
-        try { thread.join(); } catch (InterruptedException e) { e.printStackTrace(); }
-        Document doc = docRef.get();
+        synchronized (docRef) {
+            Document doc = docRef.get();
 
-        NodeList paths = doc.getElementsByTagName("path");
-        for (int i = 0; i < paths.getLength(); i++) {
+            //Add path to map
             List<LatLng> points = new ArrayList<>();
-            NodeList path = paths.item(i).getChildNodes();
-            for (int j = 0; j < path.getLength(); j++) {
-                NamedNodeMap point = path.item(j).getAttributes();
-                if (point == null) continue;
-                points.add(new LatLng(
-                        Double.parseDouble(point.getNamedItem("lat").getNodeValue()),
-                        Double.parseDouble(point.getNamedItem("lon").getNodeValue())));
+            NodeList paths = doc.getElementsByTagName("path");
+            for (int i = 0; i < paths.getLength(); i++) {
+                NodeList path = paths.item(i).getChildNodes();
+                for (int j = 0; j < path.getLength(); j++) {
+                    Node point = path.item(j);
+                    if (point.getAttributes() == null) continue;
+                    points.add(new LatLng(getDouble(point, "lat"), getDouble(point, "lon")));
+                }
             }
             map.addPolyline(new PolylineOptions().addAll(points));
-        }
 
-        final NamedNodeMap bounds = doc.getElementsByTagName("route").item(0).getAttributes();
-        map.setOnMapLoadedCallback(() -> map.moveCamera(CameraUpdateFactory.newLatLngBounds(
-                new LatLngBounds(
-                        new LatLng(Double.parseDouble(bounds.getNamedItem("latMin").getNodeValue()), Double.parseDouble(bounds.getNamedItem("lonMin").getNodeValue())),
-                        new LatLng(Double.parseDouble(bounds.getNamedItem("latMax").getNodeValue()), Double.parseDouble(bounds.getNamedItem("lonMax").getNodeValue()))), 100)));
+            //Zoom to fit path
+            final Node bounds = doc.getElementsByTagName("route").item(0);
+            map.setOnMapLoadedCallback(() -> map.moveCamera(CameraUpdateFactory.newLatLngBounds(
+                    new LatLngBounds(
+                            new LatLng(getDouble(bounds, "latMin"), getDouble(bounds, "lonMin")),
+                            new LatLng(getDouble(bounds, "latMax"), getDouble(bounds, "lonMax"))), 100)));
+        }
+    }
+
+    private static double getDouble(Node node, String name) {
+        return Double.parseDouble(node.getAttributes().getNamedItem(name).getNodeValue());
     }
 }
