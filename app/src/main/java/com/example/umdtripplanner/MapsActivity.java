@@ -8,6 +8,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.w3c.dom.Document;
@@ -58,7 +59,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         synchronized (docRef) {
             Document doc = docRef.get();
             Bus bus = new Bus(doc);
-            map.addPolyline(new PolylineOptions().addAll(bus.getPath("wico", "baltritc")));
+            map.addPolyline(new PolylineOptions().addAll(bus.closestRide(new LatLng(38.980359, -76.939040), new LatLng(38.983095, -76.945778))));
             map.setOnMapLoadedCallback(() -> map.moveCamera(CameraUpdateFactory.newLatLngBounds(bus.bounds, 100)));
         }
     }

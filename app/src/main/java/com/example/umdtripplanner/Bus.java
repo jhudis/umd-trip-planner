@@ -53,13 +53,29 @@ public class Bus {
         }
     }
 
-    public List<LatLng> getPath(String fromTag, String toTag) {
+    public List<LatLng> closestRide(LatLng from, LatLng to) {
+        return getRide(closestStop(from), closestStop(to));
+    }
+
+    private List<LatLng> getRide(Stop from, Stop to) {
         int fromIndex = 0, toIndex = 0;
         for (Stop stop : stops) {
-            if (stop.tag.equals(fromTag)) fromIndex = path.indexOf(closestPoint.get(stop));
-            if (stop.tag.equals(toTag)) toIndex = path.indexOf(closestPoint.get(stop));
+            if (stop.equals(from)) fromIndex = path.indexOf(closestPoint.get(stop));
+            if (stop.equals(to)) toIndex = path.indexOf(closestPoint.get(stop)) + 1;
         }
-        return path.subList(fromIndex, toIndex + 1);
+        if (fromIndex <= toIndex) {
+            return path.subList(fromIndex, toIndex);
+        } else {
+            List<LatLng> ret = new ArrayList<>();
+            ret.addAll(path.subList(fromIndex, path.size() - 1));
+            ret.addAll(path.subList(0, toIndex));
+            return ret;
+        }
+    }
+
+    private Stop closestStop(LatLng location) {
+        return Collections.min(stops, (o1, o2) ->
+                Double.compare(distSquared(location, o1.coords), distSquared(location, o2.coords)));
     }
 
     private static double distSquared(LatLng a, LatLng b) {
@@ -96,6 +112,21 @@ public class Bus {
             this.title = getString(node, "title");
             this.coords = getLatLng(node);
             this.id = getInt(node, "stopId");
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Stop stop = (Stop) o;
+
+            return tag.equals(stop.tag);
+        }
+
+        @Override
+        public int hashCode() {
+            return tag.hashCode();
         }
     }
 
