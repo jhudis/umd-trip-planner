@@ -15,12 +15,24 @@ import java.util.Map;
 
 public class Bus {
 
+    /** The full, detailed path this bus travels. */
     List<LatLng> path;
-    LatLngBounds bounds;
-    List<Stop> stops;
-    Map<Stop, LatLng> closestPoint;
 
+    /** The max/min lat/lon of all the points on the path. */
+    LatLngBounds bounds;
+
+    /** The stops this bus stops at. */
+    List<Stop> stops;
+
+    /** A map of each stop to the closest point to it on the path. */
+    Map<Stop, LatLng> closestPointToStops;
+
+    /**
+     * Default constructor.
+     * @param doc The XML output of a routeConfig request to the NextBus API.
+     */
     public Bus(Document doc) {
+        //Load the path
         path = new ArrayList<>();
         NodeList segments = doc.getElementsByTagName("path");
         for (int i = 0; i < segments.getLength(); i++) {
@@ -32,11 +44,13 @@ public class Bus {
             }
         }
 
+        //Load the bounds
         Node route = doc.getElementsByTagName("route").item(0);
         bounds = new LatLngBounds(
                 getLatLng(route, "latMin", "lonMin"),
                 getLatLng(route, "latMax", "lonMax"));
 
+        //Load the stops
         stops = new ArrayList<>();
         NodeList stopList = doc.getElementsByTagName("stop");
         for (int i = 0; i < stopList.getLength(); i++) {
@@ -45,24 +59,35 @@ public class Bus {
             stops.add(new Stop(stop));
         }
 
-        closestPoint = new HashMap<>();
+        //Build stop-to-point list
+        closestPointToStops = new HashMap<>();
         for (Stop stop : stops) {
             LatLng closest = Collections.min(path, (o1, o2) ->
                     Double.compare(distSquared(stop.coords, o1), distSquared(stop.coords, o2)));
-            closestPoint.put(stop, closest);
+            closestPointToStops.put(stop, closest);
         }
     }
 
+    /**
+     * Find the stops closest to the start location and end destination, respectively, and return
+     * the path between those stops.
+     * @param from Start location of the trip.
+     * @param to   End destination of the trip.
+     * @return The ride with the shortest walking distance to/from the start/end stops, respectively.
+     */
     public List<LatLng> closestRide(LatLng from, LatLng to) {
         return getRide(closestStop(from), closestStop(to));
     }
 
+    /**
+     * Get the part of the path that runs between the given stops.
+     * @param from The stop at the start of the ride.
+     * @param to   The stop at the end of the ride.
+     * @return A list of points between the two given stops.
+     */
     private List<LatLng> getRide(Stop from, Stop to) {
-        int fromIndex = 0, toIndex = 0;
-        for (Stop stop : stops) {
-            if (stop.equals(from)) fromIndex = path.indexOf(closestPoint.get(stop));
-            if (stop.equals(to)) toIndex = path.indexOf(closestPoint.get(stop)) + 1;
-        }
+        int fromIndex = path.indexOf(closestPointToStops.get(from));
+        int toIndex = path.indexOf(closestPointToStops.get(to)) + 1;
         if (fromIndex <= toIndex) {
             return path.subList(fromIndex, toIndex);
         } else {
@@ -73,11 +98,13 @@ public class Bus {
         }
     }
 
-    private Stop closestStop(LatLng location) {
+    /** Returns the closest stop to the given coords. */
+    private Stop closestStop(LatLng coords) {
         return Collections.min(stops, (o1, o2) ->
-                Double.compare(distSquared(location, o1.coords), distSquared(location, o2.coords)));
+                Double.compare(distSquared(coords, o1.coords), distSquared(coords, o2.coords)));
     }
 
+    /** Returns the distance from lat/lon pair a to pair b, squared. */
     private static double distSquared(LatLng a, LatLng b) {
         return Math.pow(a.latitude - b.latitude, 2) + Math.pow(a.longitude - b.longitude, 2);
     }
