@@ -12,6 +12,7 @@ import java.util.List;
 
 public class Ride extends ArrayList<LatLng> {
 
+    Stop pickup, dropoff;
     private LatLngBounds bounds;
 
     @Override

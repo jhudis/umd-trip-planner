@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.umdtripplanner.Utils.*;
+
 public class Bus {
 
     /** The full, detailed path this bus travels. */
@@ -71,33 +73,12 @@ public class Bus {
     /**
      * Find the stops closest to the start location and end destination, respectively, and return
      * the path between those stops.
-     * @param from Start location of the trip.
-     * @param to   End destination of the trip.
+     * @param origin      Start location of the trip.
+     * @param destination End location of the trip.
      * @return The ride with the shortest walking distance to/from the start/end stops, respectively.
      */
-    public Ride closestRide(LatLng from, LatLng to) {
-        return getRide(closestStop(from), closestStop(to));
-    }
-
-    /**
-     * Get the part of the path that runs between the given stops.
-     * @param from The stop at the start of the ride.
-     * @param to   The stop at the end of the ride.
-     * @return A list of points between the two given stops.
-     */
-    private Ride getRide(Stop from, Stop to) {
-        int fromIndex = path.indexOf(closestPointToStops.get(from));
-        int toIndex = path.indexOf(closestPointToStops.get(to)) + 1;
-
-        Ride ride = new Ride();
-        if (fromIndex <= toIndex) {
-            ride.addAll(path.subList(fromIndex, toIndex));
-        } else {
-            ride.addAll(path.subList(fromIndex, path.size() - 1));
-            ride.addAll(path.subList(0, toIndex));
-        }
-
-        return ride;
+    public Ride closestRide(LatLng origin, LatLng destination) {
+        return getRide(closestStop(origin), closestStop(destination));
     }
 
     /** Returns the closest stop to the given coords. */
@@ -106,57 +87,27 @@ public class Bus {
                 Double.compare(distSquared(coords, o1.coords), distSquared(coords, o2.coords)));
     }
 
-    /** Returns the distance from lat/lon pair a to pair b, squared. */
-    private static double distSquared(LatLng a, LatLng b) {
-        return Math.pow(a.latitude - b.latitude, 2) + Math.pow(a.longitude - b.longitude, 2);
-    }
+    /**
+     * Get the part of the path that runs between the given stops.
+     * @param pickup  The stop at the start of the ride.
+     * @param dropoff The stop at the end of the ride.
+     * @return A list of points between the two given stops.
+     */
+    private Ride getRide(Stop pickup, Stop dropoff) {
+        int fromIndex = path.indexOf(closestPointToStops.get(pickup));
+        int toIndex = path.indexOf(closestPointToStops.get(dropoff)) + 1;
 
-    private static String getString(Node node, String name) {
-        return node.getAttributes().getNamedItem(name).getNodeValue();
-    }
-
-    private static double getDouble(Node node, String name) {
-        return Double.parseDouble(getString(node, name));
-    }
-
-    private static int getInt(Node node, String name) {
-        return Integer.parseInt(getString(node, name));
-    }
-
-    private static LatLng getLatLng(Node node, String latName, String lonName) {
-        return new LatLng(getDouble(node, latName), getDouble(node, lonName));
-    }
-
-    private static LatLng getLatLng(Node node) {
-        return new LatLng(getDouble(node, "lat"), getDouble(node, "lon"));
-    }
-
-    private static class Stop {
-        String tag, title;
-        LatLng coords;
-        int id;
-
-        public Stop(Node node) {
-            this.tag = getString(node, "tag");
-            this.title = getString(node, "title");
-            this.coords = getLatLng(node);
-            this.id = getInt(node, "stopId");
+        Ride ride = new Ride();
+        if (fromIndex <= toIndex) {
+            ride.addAll(path.subList(fromIndex, toIndex));
+        } else {
+            ride.addAll(path.subList(fromIndex, path.size() - 1));
+            ride.addAll(path.subList(0, toIndex));
         }
+        ride.pickup = pickup;
+        ride.dropoff = dropoff;
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Stop stop = (Stop) o;
-
-            return tag.equals(stop.tag);
-        }
-
-        @Override
-        public int hashCode() {
-            return tag.hashCode();
-        }
+        return ride;
     }
 
 }

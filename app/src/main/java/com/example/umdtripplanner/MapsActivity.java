@@ -2,6 +2,7 @@ package com.example.umdtripplanner;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,7 +25,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    final AtomicReference<Document> docRef = new AtomicReference<>();
+    Trip trip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,14 +42,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void getBus() {
         Thread thread = new Thread(() -> {
-            synchronized (docRef) {
+            synchronized (this) {
+                Document doc = null;
                 try {
                     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                     DocumentBuilder db = dbf.newDocumentBuilder();
-                    docRef.set(db.parse(new URL("http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=umd&r=132").openStream()));
+                    doc = db.parse(new URL("http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=umd&r=132").openStream());
                 } catch (IOException | SAXException | ParserConfigurationException e) {
                     e.printStackTrace();
                 }
+                assert doc != null;
+
+                trip = new Trip(new Bus(doc), new LatLng(38.983095, -76.945778), new LatLng(38.980359, -76.939040));
             }
         });
         thread.start();
@@ -56,12 +61,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(final GoogleMap map) {
-        synchronized (docRef) {
-            Document doc = docRef.get();
-            Bus bus = new Bus(doc);
-            Ride ride = bus.closestRide(new LatLng(38.983095, -76.945778), new LatLng(38.980359, -76.939040));
-            map.addPolyline(new PolylineOptions().addAll(ride));
-            map.setOnMapLoadedCallback(() -> map.moveCamera(CameraUpdateFactory.newLatLngBounds(ride.getBounds(), 100)));
+        synchronized (this) {
+            map.addPolyline(new PolylineOptions().addAll(trip.getBoard()).color(Color.CYAN));
+            map.addPolyline(new PolylineOptions().addAll(trip.getDepart()).color(Color.CYAN));
+            map.addPolyline(new PolylineOptions().addAll(trip.getRide()));
+            map.setOnMapLoadedCallback(() -> map.moveCamera(CameraUpdateFactory.newLatLngBounds(trip.getRide().getBounds(), 100)));
         }
     }
 }
