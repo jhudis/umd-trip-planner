@@ -59,8 +59,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         synchronized (docRef) {
             Document doc = docRef.get();
             Bus bus = new Bus(doc);
-            map.addPolyline(new PolylineOptions().addAll(bus.closestRide(new LatLng(38.980359, -76.939040), new LatLng(38.983095, -76.945778))));
-            map.setOnMapLoadedCallback(() -> map.moveCamera(CameraUpdateFactory.newLatLngBounds(bus.bounds, 100)));
+            Ride ride = bus.closestRide(new LatLng(38.983095, -76.945778), new LatLng(38.980359, -76.939040));
+            map.addPolyline(new PolylineOptions().addAll(ride));
+            map.setOnMapLoadedCallback(() -> map.moveCamera(CameraUpdateFactory.newLatLngBounds(ride.getBounds(), 100)));
         }
     }
 }

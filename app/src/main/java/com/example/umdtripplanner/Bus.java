@@ -75,7 +75,7 @@ public class Bus {
      * @param to   End destination of the trip.
      * @return The ride with the shortest walking distance to/from the start/end stops, respectively.
      */
-    public List<LatLng> closestRide(LatLng from, LatLng to) {
+    public Ride closestRide(LatLng from, LatLng to) {
         return getRide(closestStop(from), closestStop(to));
     }
 
@@ -85,17 +85,19 @@ public class Bus {
      * @param to   The stop at the end of the ride.
      * @return A list of points between the two given stops.
      */
-    private List<LatLng> getRide(Stop from, Stop to) {
+    private Ride getRide(Stop from, Stop to) {
         int fromIndex = path.indexOf(closestPointToStops.get(from));
         int toIndex = path.indexOf(closestPointToStops.get(to)) + 1;
+
+        Ride ride = new Ride();
         if (fromIndex <= toIndex) {
-            return path.subList(fromIndex, toIndex);
+            ride.addAll(path.subList(fromIndex, toIndex));
         } else {
-            List<LatLng> ret = new ArrayList<>();
-            ret.addAll(path.subList(fromIndex, path.size() - 1));
-            ret.addAll(path.subList(0, toIndex));
-            return ret;
+            ride.addAll(path.subList(fromIndex, path.size() - 1));
+            ride.addAll(path.subList(0, toIndex));
         }
+
+        return ride;
     }
 
     /** Returns the closest stop to the given coords. */
