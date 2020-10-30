@@ -7,7 +7,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class Ride extends ArrayList<LatLng> {
@@ -25,13 +24,7 @@ public class Ride extends ArrayList<LatLng> {
             potentials.add(bounds.southwest);
         }
 
-        bounds = new LatLngBounds(
-                new LatLng(
-                        Collections.min(potentials, (o1, o2) -> Double.compare(o1.latitude, o2.latitude)).latitude,
-                        Collections.min(potentials, (o1, o2) -> Double.compare(o1.longitude, o2.longitude)).longitude),
-                new LatLng(
-                        Collections.max(potentials, (o1, o2) -> Double.compare(o1.latitude, o2.latitude)).latitude,
-                        Collections.max(potentials, (o1, o2) -> Double.compare(o1.longitude, o2.longitude)).longitude));
+        bounds = Utils.getBounds(potentials);
 
         return ret;
     }

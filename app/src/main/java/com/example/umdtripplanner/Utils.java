@@ -1,8 +1,13 @@
 package com.example.umdtripplanner;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 import org.w3c.dom.Node;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class Utils {
 
@@ -29,6 +34,27 @@ public class Utils {
 
     public static LatLng getLatLng(Node node) {
         return new LatLng(getDouble(node, "lat"), getDouble(node, "lon"));
+    }
+
+    public static LatLngBounds getBounds(List<LatLng> coords) {
+        return new LatLngBounds(
+                new LatLng(
+                        Collections.min(coords, (o1, o2) -> Double.compare(o1.latitude, o2.latitude)).latitude,
+                        Collections.min(coords, (o1, o2) -> Double.compare(o1.longitude, o2.longitude)).longitude),
+                new LatLng(
+                        Collections.max(coords, (o1, o2) -> Double.compare(o1.latitude, o2.latitude)).latitude,
+                        Collections.max(coords, (o1, o2) -> Double.compare(o1.longitude, o2.longitude)).longitude));
+    }
+
+    public static LatLngBounds mergeBounds(LatLngBounds... boundsArray) {
+        List<LatLngBounds> bounds = Arrays.asList(boundsArray);
+        return new LatLngBounds(
+                new LatLng(
+                        Collections.min(bounds, (o1, o2) -> Double.compare(o1.southwest.latitude, o2.southwest.latitude)).southwest.latitude,
+                        Collections.min(bounds, (o1, o2) -> Double.compare(o1.southwest.longitude, o2.southwest.longitude)).southwest.longitude),
+                new LatLng(
+                        Collections.max(bounds, (o1, o2) -> Double.compare(o1.northeast.latitude, o2.northeast.latitude)).northeast.latitude,
+                        Collections.max(bounds, (o1, o2) -> Double.compare(o1.northeast.longitude, o2.northeast.longitude)).northeast.longitude));
     }
 
 }

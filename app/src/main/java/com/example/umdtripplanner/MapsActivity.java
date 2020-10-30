@@ -55,7 +55,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             map.addPolyline(new PolylineOptions().addAll(trip.getBoard()).color(Color.CYAN));
             map.addPolyline(new PolylineOptions().addAll(trip.getDepart()).color(Color.CYAN));
             map.addPolyline(new PolylineOptions().addAll(trip.getRide()));
-            map.setOnMapLoadedCallback(() -> map.moveCamera(CameraUpdateFactory.newLatLngBounds(trip.getRide().getBounds(), 100)));
+            map.setOnMapLoadedCallback(() -> map.moveCamera(CameraUpdateFactory.newLatLngBounds(trip.getBounds(), 100)));
         }
     }
 }
