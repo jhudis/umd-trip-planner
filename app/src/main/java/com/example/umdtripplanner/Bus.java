@@ -6,12 +6,19 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import static com.example.umdtripplanner.Utils.*;
 
@@ -31,9 +38,20 @@ public class Bus {
 
     /**
      * Default constructor.
-     * @param doc The XML output of a routeConfig request to the NextBus API.
+     * @param number The bus number.
      */
-    public Bus(Document doc) {
+    public Bus(int number) {
+        //Poll NextBus API
+        Document doc = null;
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            doc = db.parse(new URL("http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=umd&r=" + number).openStream());
+        } catch (IOException | SAXException | ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+        assert doc != null;
+
         //Load the path
         path = new ArrayList<>();
         NodeList segments = doc.getElementsByTagName("path");

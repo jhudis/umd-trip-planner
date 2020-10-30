@@ -43,17 +43,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void getBus() {
         Thread thread = new Thread(() -> {
             synchronized (this) {
-                Document doc = null;
-                try {
-                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder db = dbf.newDocumentBuilder();
-                    doc = db.parse(new URL("http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=umd&r=132").openStream());
-                } catch (IOException | SAXException | ParserConfigurationException e) {
-                    e.printStackTrace();
-                }
-                assert doc != null;
-
-                trip = new Trip(new Bus(doc), new LatLng(38.983095, -76.945778), new LatLng(38.980359, -76.939040));
+                trip = new Trip(new Bus(132), new LatLng(38.983095, -76.945778), new LatLng(38.980359, -76.939040));
             }
         });
         thread.start();
