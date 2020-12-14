@@ -1,27 +1,19 @@
-package com.example.umdtripplanner;
+package com.example.umdtripplanner.app;
 
 import androidx.fragment.app.FragmentActivity;
 
 import android.graphics.Color;
 import android.os.Bundle;
 
+import com.example.umdtripplanner.objects.Bus;
+import com.example.umdtripplanner.R;
+import com.example.umdtripplanner.objects.Trip;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
-
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 

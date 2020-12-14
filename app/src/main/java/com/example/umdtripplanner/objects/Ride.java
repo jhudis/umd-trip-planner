@@ -1,4 +1,4 @@
-package com.example.umdtripplanner;
+package com.example.umdtripplanner.objects;
 
 import androidx.annotation.NonNull;
 

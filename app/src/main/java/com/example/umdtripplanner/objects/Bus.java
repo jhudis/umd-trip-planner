@@ -1,4 +1,4 @@
-package com.example.umdtripplanner;
+package com.example.umdtripplanner.objects;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -20,7 +20,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import static com.example.umdtripplanner.Utils.*;
+import static com.example.umdtripplanner.objects.Utils.*;
 
 public class Bus {
 

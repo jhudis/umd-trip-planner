@@ -1,10 +1,10 @@
-package com.example.umdtripplanner;
+package com.example.umdtripplanner.objects;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import org.w3c.dom.Node;
 
-import static com.example.umdtripplanner.Utils.*;
+import static com.example.umdtripplanner.objects.Utils.*;
 
 public class Stop {
     String tag, title;

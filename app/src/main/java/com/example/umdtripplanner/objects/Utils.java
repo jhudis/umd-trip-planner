@@ -1,4 +1,4 @@
-package com.example.umdtripplanner;
+package com.example.umdtripplanner.objects;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
