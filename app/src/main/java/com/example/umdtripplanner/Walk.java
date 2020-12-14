@@ -16,6 +16,7 @@ import java.util.ArrayList;
 public class Walk extends ArrayList<LatLng> {
 
     private LatLngBounds bounds;
+    private double duration;
 
     public Walk(LatLng origin, LatLng destination) {
         String url = "https://api.openrouteservice.org/v2/directions/foot-walking?" +
@@ -24,10 +25,12 @@ public class Walk extends ArrayList<LatLng> {
                 "&end=" + destination.longitude + "," + destination.latitude;
 
         try {
-            JSONObject apiOutput = new JSONObject(new BufferedReader(
-                    new InputStreamReader(new URL(url).openStream())).readLine());
-            JSONArray jsonCoords = apiOutput.getJSONArray("features").getJSONObject(0)
-                    .getJSONObject("geometry").getJSONArray("coordinates");
+            JSONObject apiOutput = new JSONObject(new BufferedReader(new InputStreamReader(new URL(url).openStream())).readLine());
+            JSONObject features = apiOutput.getJSONArray("features").getJSONObject(0);
+
+            duration = features.getJSONObject("properties").getJSONObject("summary").getDouble("duration");
+
+            JSONArray jsonCoords = features.getJSONObject("geometry").getJSONArray("coordinates");
             for (int i = 0; i < jsonCoords.length(); i++) {
                 JSONArray jsonCoord = jsonCoords.getJSONArray(i);
                 add(new LatLng(jsonCoord.getDouble(1), jsonCoord.getDouble(0)));
@@ -41,5 +44,9 @@ public class Walk extends ArrayList<LatLng> {
 
     public LatLngBounds getBounds() {
         return bounds;
+    }
+
+    public double getDuration() {
+        return duration;
     }
 }
