@@ -1,6 +1,7 @@
 package com.example.umdtripplanner.app;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.room.Room;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -8,12 +9,17 @@ import android.os.Bundle;
 import com.example.umdtripplanner.objects.Bus;
 import com.example.umdtripplanner.R;
 import com.example.umdtripplanner.objects.Trip;
+import com.example.umdtripplanner.room.AppDatabase;
+import com.example.umdtripplanner.room.GapsDao;
+import com.example.umdtripplanner.room.Gap;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -35,6 +41,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void getBus() {
         Thread thread = new Thread(() -> {
             synchronized (this) {
+                AppDatabase db = Room.databaseBuilder(this, AppDatabase.class, "gaps.db").createFromAsset("database/gaps.db").build();
+                GapsDao dao = db.gapsDao();
+                List<Gap> gaps = dao.getAll();
+
                 trip = new Trip(new Bus(132), new LatLng(38.983095, -76.945778), new LatLng(38.980359, -76.939040));
             }
         });
