@@ -1,0 +1,76 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "bc8b0fe6edceeecf91988668a366c719",
+    "entities": [
+      {
+        "tableName": "gaps",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `routeTag` INTEGER NOT NULL, `gapTime` INTEGER NOT NULL, `numLogs` INTEGER NOT NULL, `srcDirTag` TEXT NOT NULL, `srcStopTag` TEXT NOT NULL, `dstDirTag` TEXT NOT NULL, `dstStopTag` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "routeTag",
+            "columnName": "routeTag",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gapTime",
+            "columnName": "gapTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "numLogs",
+            "columnName": "numLogs",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "srcDirTag",
+            "columnName": "srcDirTag",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "srcStopTag",
+            "columnName": "srcStopTag",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dstDirTag",
+            "columnName": "dstDirTag",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dstStopTag",
+            "columnName": "dstStopTag",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bc8b0fe6edceeecf91988668a366c719')"
+    ]
+  }
+}
