@@ -2,6 +2,8 @@ package com.example.umdtripplanner.objects;
 
 import androidx.annotation.NonNull;
 
+import com.example.umdtripplanner.app.MapsActivity;
+import com.example.umdtripplanner.room.GapsDao;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
@@ -15,10 +17,10 @@ public class Ride extends ArrayList<LatLng> {
     private LatLngBounds bounds;
     private int duration;
 
-    public Ride(Stop pickup, Stop dropoff) {
+    public Ride(Stop pickup, Stop dropoff, List<Stop> stops) {
         this.pickup = pickup;
         this.dropoff = dropoff;
-        this.duration = calculateDuration();
+        this.duration = calculateDuration(stops);
     }
 
     @Override
@@ -36,9 +38,18 @@ public class Ride extends ArrayList<LatLng> {
         return ret;
     }
 
-    private int calculateDuration() {
-        //TODO: Implement
-        return 0;
+    private int calculateDuration(List<Stop> stops) {
+        int curr = stops.indexOf(pickup), end = stops.indexOf(dropoff), next, duration = 0;
+        do {
+            next = curr + 1 == stops.size() ? 0 : curr + 1;
+            duration += findGapDuration(stops.get(curr), stops.get(next));
+            curr = next;
+        } while (curr != end);
+        return duration;
+    }
+
+    private int findGapDuration(Stop curr, Stop next) {
+        return MapsActivity.getDao().getDuration(132, "loop", curr.tag, "loop", next.tag);
     }
 
     public LatLngBounds getBounds() {

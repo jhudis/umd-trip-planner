@@ -24,6 +24,7 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     Trip trip;
+    static GapsDao dao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +43,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Thread thread = new Thread(() -> {
             synchronized (this) {
                 AppDatabase db = Room.databaseBuilder(this, AppDatabase.class, "gaps.db").createFromAsset("database/gaps.db").build();
-                GapsDao dao = db.gapsDao();
-                List<Gap> gaps = dao.getAll();
+                dao = db.gapsDao();
 
                 trip = new Trip(new Bus(132), new LatLng(38.983095, -76.945778), new LatLng(38.980359, -76.939040));
+                int u=0;
             }
         });
         thread.start();
@@ -59,5 +60,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             map.addPolyline(new PolylineOptions().addAll(trip.getRide()));
             map.setOnMapLoadedCallback(() -> map.moveCamera(CameraUpdateFactory.newLatLngBounds(trip.getBounds(), 100)));
         }
+    }
+
+    public static GapsDao getDao() {
+        return dao;
     }
 }
