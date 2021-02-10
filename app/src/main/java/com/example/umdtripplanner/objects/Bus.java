@@ -36,11 +36,16 @@ public class Bus {
     /** A map of each stop to the closest point to it on the path. */
     Map<Stop, LatLng> closestPointToStops;
 
+    /** This bus's route number. */
+    int number;
+
     /**
      * Default constructor.
-     * @param number The bus number.
+     * @param number The bus route number.
      */
     public Bus(int number) {
+        this.number = number;
+
         //Poll NextBus API
         Document doc = null;
         try {
@@ -115,7 +120,7 @@ public class Bus {
         int fromIndex = path.indexOf(closestPointToStops.get(pickup));
         int toIndex = path.indexOf(closestPointToStops.get(dropoff)) + 1;
 
-        Ride ride = new Ride(pickup, dropoff, stops);
+        Ride ride = new Ride(pickup, dropoff, stops, number);
         if (fromIndex <= toIndex) {
             ride.addAll(path.subList(fromIndex, toIndex));
         } else {

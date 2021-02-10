@@ -7,7 +7,6 @@ import java.util.List;
 
 @Dao
 public interface GapsDao {
-    @Query("SELECT gapTime FROM gaps WHERE routeTag=:route AND srcDirTag=:srcDir " +
-            "AND srcStopTag=:srcStop AND dstDirTag=:dstDir AND dstStopTag=:dstStop")
-    int getDuration(int route, String srcDir, String srcStop, String dstDir, String dstStop);
+    @Query("SELECT gapTime FROM gaps WHERE routeTag=:route AND srcStopTag=:src AND dstStopTag=:dst")
+    int getDuration(int route, String src, String dst);
 }

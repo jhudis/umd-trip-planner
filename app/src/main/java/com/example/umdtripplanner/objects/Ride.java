@@ -17,10 +17,10 @@ public class Ride extends ArrayList<LatLng> {
     private LatLngBounds bounds;
     private int duration;
 
-    public Ride(Stop pickup, Stop dropoff, List<Stop> stops) {
+    public Ride(Stop pickup, Stop dropoff, List<Stop> stops, int route) {
         this.pickup = pickup;
         this.dropoff = dropoff;
-        this.duration = calculateDuration(stops);
+        this.duration = calculateDuration(stops, route);
     }
 
     @Override
@@ -38,18 +38,18 @@ public class Ride extends ArrayList<LatLng> {
         return ret;
     }
 
-    private int calculateDuration(List<Stop> stops) {
+    private int calculateDuration(List<Stop> stops, int route) {
         int curr = stops.indexOf(pickup), end = stops.indexOf(dropoff), next, duration = 0;
         do {
             next = curr + 1 == stops.size() ? 0 : curr + 1;
-            duration += findGapDuration(stops.get(curr), stops.get(next));
+            duration += findGapDuration(stops.get(curr), stops.get(next), route);
             curr = next;
         } while (curr != end);
         return duration;
     }
 
-    private int findGapDuration(Stop curr, Stop next) {
-        return MapsActivity.getDao().getDuration(132, "loop", curr.tag, "loop", next.tag);
+    private int findGapDuration(Stop curr, Stop next, int route) {
+        return MapsActivity.getDao().getDuration(route, curr.tag, next.tag);
     }
 
     public LatLngBounds getBounds() {
