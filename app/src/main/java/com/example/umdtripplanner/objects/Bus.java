@@ -115,15 +115,13 @@ public class Bus {
         int fromIndex = path.indexOf(closestPointToStops.get(pickup));
         int toIndex = path.indexOf(closestPointToStops.get(dropoff)) + 1;
 
-        Ride ride = new Ride();
+        Ride ride = new Ride(pickup, dropoff);
         if (fromIndex <= toIndex) {
             ride.addAll(path.subList(fromIndex, toIndex));
         } else {
             ride.addAll(path.subList(fromIndex, path.size() - 1));
             ride.addAll(path.subList(0, toIndex));
         }
-        ride.pickup = pickup;
-        ride.dropoff = dropoff;
 
         return ride;
     }

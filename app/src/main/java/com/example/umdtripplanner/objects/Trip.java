@@ -10,12 +10,14 @@ public class Trip {
     private Ride ride;
     private Walk board, depart;
     private LatLngBounds bounds;
+    private int duration;
 
     public Trip(Bus bus, LatLng origin, LatLng destination) {
         ride = bus.closestRide(origin, destination);
-        board = new Walk(origin, ride.pickup.coords);
-        depart = new Walk(ride.dropoff.coords, destination);
+        board = new Walk(origin, ride.getPickup().coords);
+        depart = new Walk(ride.getDropoff().coords, destination);
         bounds = mergeBounds(ride.getBounds(), board.getBounds(), depart.getBounds());
+        duration = ride.getDuration() + board.getDuration() + depart.getDuration();
     }
 
     public Ride getRide() {
@@ -32,5 +34,9 @@ public class Trip {
 
     public LatLngBounds getBounds() {
         return bounds;
+    }
+
+    public int getDuration() {
+        return duration;
     }
 }

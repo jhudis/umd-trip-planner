@@ -11,8 +11,15 @@ import java.util.List;
 
 public class Ride extends ArrayList<LatLng> {
 
-    Stop pickup, dropoff;
+    private Stop pickup, dropoff;
     private LatLngBounds bounds;
+    private int duration;
+
+    public Ride(Stop pickup, Stop dropoff) {
+        this.pickup = pickup;
+        this.dropoff = dropoff;
+        this.duration = calculateDuration();
+    }
 
     @Override
     public boolean addAll(@NonNull Collection<? extends LatLng> c) {
@@ -29,7 +36,24 @@ public class Ride extends ArrayList<LatLng> {
         return ret;
     }
 
+    private int calculateDuration() {
+        //TODO: Implement
+        return 0;
+    }
+
     public LatLngBounds getBounds() {
         return bounds;
+    }
+
+    public Stop getPickup() {
+        return pickup;
+    }
+
+    public Stop getDropoff() {
+        return dropoff;
+    }
+
+    public int getDuration() {
+        return duration;
     }
 }
