@@ -23,8 +23,10 @@ import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    Trip trip;
+    /** Data Access Object for the gaps database. */
     static GapsDao dao;
+
+    Trip trip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

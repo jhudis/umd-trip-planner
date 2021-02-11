@@ -13,10 +13,22 @@ import java.util.List;
 
 public class Ride extends ArrayList<LatLng> {
 
+    /** The stops at which the rider is picked up and dropped off, respectively. */
     private Stop pickup, dropoff;
+
+    /** The lat/long bounds of the ride. */
     private LatLngBounds bounds;
+
+    /** The expected duration of the ride, in seconds. */
     private int duration;
 
+    /**
+     * Default constructor.
+     * @param pickup  The stop at which the rider is picked up.
+     * @param dropoff The stop at which the rider is dropped off.
+     * @param stops   The full list of stops this ride's bus goes to, in order.
+     * @param route   The route number of this ride's bus.
+     */
     public Ride(Stop pickup, Stop dropoff, List<Stop> stops, int route) {
         this.pickup = pickup;
         this.dropoff = dropoff;
@@ -39,6 +51,8 @@ public class Ride extends ArrayList<LatLng> {
     }
 
     private int calculateDuration(List<Stop> stops, int route) {
+        //Add the durations from stop to stop, starting at pickup and ending at dropoff, wrapping
+        //around if necessary
         int curr = stops.indexOf(pickup), end = stops.indexOf(dropoff), next, duration = 0;
         do {
             next = curr + 1 == stops.size() ? 0 : curr + 1;

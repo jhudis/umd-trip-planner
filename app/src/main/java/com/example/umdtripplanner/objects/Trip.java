@@ -7,11 +7,24 @@ import static com.example.umdtripplanner.objects.Utils.*;
 
 public class Trip {
 
+    /** The bus ride taken on this trip. */
     private Ride ride;
+
+    /** The walk from the origin to the bus and the walk from the bus to the destination, respectively */
     private Walk board, depart;
+
+    /** The lat/long bounds of the trip. */
     private LatLngBounds bounds;
+
+    /** The expected duration of the trip, in seconds. */
     private int duration;
 
+    /**
+     * Default constructor.
+     * @param bus         The bus being taken.
+     * @param origin      The origin of the trip.
+     * @param destination The destination of the trip.
+     */
     public Trip(Bus bus, LatLng origin, LatLng destination) {
         ride = bus.closestRide(origin, destination);
         board = new Walk(origin, ride.getPickup().coords);

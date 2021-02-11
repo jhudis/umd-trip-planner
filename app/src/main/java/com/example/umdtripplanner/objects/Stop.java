@@ -7,10 +7,20 @@ import org.w3c.dom.Node;
 import static com.example.umdtripplanner.objects.Utils.*;
 
 public class Stop {
+
+    /** The short tag and full title of this stop. */
     String tag, title;
+
+    /** The lat/long coordinates of this stop. */
     LatLng coords;
+
+    /** The stop's ID number. */
     int id;
 
+    /**
+     * Default constructor.
+     * @param node A {@code <stop>} child of a {@code <route>}.
+     */
     public Stop(Node node) {
         this.tag = getString(node, "tag");
         this.title = getString(node, "title");
