@@ -33,6 +33,20 @@ public class Trip {
         duration = ride.getDuration() + board.getDuration() + depart.getDuration();
     }
 
+    /**
+     * Estimate the duration of the trip by not invoking the OpenRouteService API to avoid rate
+     * limiting.
+     * @param bus         The bus being taken.
+     * @param origin      The origin of the trip.
+     * @param destination The destination of the trip.
+     */
+    public static int estimateDuration(Bus bus, LatLng origin, LatLng destination) {
+        Ride ride = bus.closestRide(origin, destination);
+        int board = Walk.estimateDuration(origin, ride.getPickup().coords);
+        int depart = Walk.estimateDuration(ride.getDropoff().coords, destination);
+        return ride.getDuration() + board + depart;
+    }
+
     public Ride getRide() {
         return ride;
     }

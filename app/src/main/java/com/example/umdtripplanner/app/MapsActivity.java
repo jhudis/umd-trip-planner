@@ -5,6 +5,7 @@ import androidx.room.Room;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.umdtripplanner.objects.Bus;
 import com.example.umdtripplanner.R;
@@ -24,7 +25,10 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     /** Data Access Object for the gaps database. */
-    static GapsDao dao;
+    private static GapsDao dao;
+
+    /** Array of all Shuttle UM route numbers. */
+    private static final int[] routes = {104, 105, 108, 109, 111, 113, 114, 115, 116, 117, 118, 122, 126, 131, 132, 133, 141, 142, 143};
 
     Trip trip;
 
@@ -47,7 +51,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 AppDatabase db = Room.databaseBuilder(this, AppDatabase.class, "gaps.db").createFromAsset("database/gaps.db").build();
                 dao = db.gapsDao();
 
-                trip = new Trip(new Bus(132), new LatLng(38.983095, -76.945778), new LatLng(38.980359, -76.939040));
+                int bestDuration = Integer.MAX_VALUE;
+                int bestRoute = 0;
+                for (int route : routes) {
+                    int duration = Trip.estimateDuration(new Bus(route), new LatLng(38.983095, -76.945778), new LatLng(38.980359, -76.939040));
+                    if (duration < bestDuration) {
+                        bestDuration = duration;
+                        bestRoute = route;
+                    }
+                }
+                trip = new Trip(new Bus(bestRoute), new LatLng(38.983095, -76.945778), new LatLng(38.980359, -76.939040));
             }
         });
         thread.start();

@@ -22,6 +22,12 @@ public class Walk extends ArrayList<LatLng> {
     /** The expected duration of the walk, in seconds. */
     private int duration;
 
+    /** Mean radius of Earth, in meters. */
+    private static final int EARTH_RADIUS_METERS = 6371000;
+
+    /** Average walking speed, in meters per second. */
+    private static final double WALKING_SPEED_MPS = 1.4;
+
     public Walk(LatLng origin, LatLng destination) {
         //Prepare URL for OpenRouteService request
         String url = "https://api.openrouteservice.org/v2/directions/foot-walking?" +
@@ -48,6 +54,16 @@ public class Walk extends ArrayList<LatLng> {
         }
 
         bounds = Utils.getBounds(this);
+    }
+
+    public static int estimateDuration(LatLng origin, LatLng destination) {
+        double lat1 = Math.toRadians(origin.latitude), lon1 = Math.toRadians(origin.longitude),
+               lat2 = Math.toRadians(destination.latitude), lon2 = Math.toRadians(destination.longitude);
+        //From https://en.wikipedia.org/wiki/Great-circle_distance#Formulae
+        double radians = Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1));
+        double meters = radians * EARTH_RADIUS_METERS;
+        double seconds = meters / WALKING_SPEED_MPS;
+        return (int) seconds;
     }
 
     public LatLngBounds getBounds() {

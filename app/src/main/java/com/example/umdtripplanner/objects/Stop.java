@@ -14,9 +14,6 @@ public class Stop {
     /** The lat/long coordinates of this stop. */
     LatLng coords;
 
-    /** The stop's ID number. */
-    int id;
-
     /**
      * Default constructor.
      * @param node A {@code <stop>} child of a {@code <route>}.
@@ -25,7 +22,6 @@ public class Stop {
         this.tag = getString(node, "tag");
         this.title = getString(node, "title");
         this.coords = getLatLng(node);
-        this.id = getInt(node, "stopId");
     }
 
     @Override

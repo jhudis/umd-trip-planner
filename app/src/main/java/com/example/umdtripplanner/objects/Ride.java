@@ -3,7 +3,6 @@ package com.example.umdtripplanner.objects;
 import androidx.annotation.NonNull;
 
 import com.example.umdtripplanner.app.MapsActivity;
-import com.example.umdtripplanner.room.GapsDao;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
